@@ -1,0 +1,165 @@
+<dashboard theme="dark">
+  <label>NASA NEO</label>
+  <description>Analysis of Near Earth Objects (NEOs) from 2020</description>
+  <row>
+    <panel>
+      <chart>
+        <title>NEO Frequency by Week</title>
+        <search>
+          <query>index="nasa_neo" | rename close_approach_data{}.close_approach_date AS approach_date | eval approach_week=strftime(strptime(approach_date, "%F"), "%V") | chart count by approach_week, orbital_data.orbit_class.orbit_class_type</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.axisTitleX.text">Approach Week</option>
+        <option name="charting.axisTitleY.text">Frequency</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">top</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>NEO Frequency by Orbit Uncertainty</title>
+        <search>
+          <query>index="nasa_neo" | chart count by orbital_data.orbit_uncertainty, orbital_data.orbit_class.orbit_class_type</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.axisTitleX.text">Orbit Uncertainty</option>
+        <option name="charting.axisTitleY.text">Frequency</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">top</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Orbit Uncertainty by Data Arc</title>
+        <search>
+          <query>index="nasa_neo" | chart avg(orbital_data.data_arc_in_days) as x by orbital_data.orbit_uncertainty 
+| eval x=round(x, 2)</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.axisTitleX.text">Data Arc (in days)</option>
+        <option name="charting.axisTitleY.text">Orbit Uncertainty</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Orbit Uncertainty by Observations</title>
+        <search>
+          <query>index="nasa_neo" | chart avg(orbital_data.observations_used) as x by orbital_data.orbit_uncertainty 
+| eval x = round(x, 2)</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.axisTitleX.text">Observations</option>
+        <option name="charting.axisTitleY.text">Orbit Uncertainty</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Orbit Uncertainty Frequency by Potentially Hazardous Asteroids</title>
+        <search>
+          <query>index="nasa_neo" | chart count by orbital_data.orbit_uncertainty, is_potentially_hazardous_asteroid</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.axisTitleX.text">Orbit Uncertainty</option>
+        <option name="charting.axisTitleY.text">Frequency</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Potentially Hazardous Asteroids Relationship of Magnitude and MOID</title>
+        <search>
+          <query>index="nasa_neo" | table is_potentially_hazardous_asteroid orbital_data.minimum_orbit_intersection absolute_magnitude_h</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorUnit">0.02</option>
+        <option name="charting.axisLabelsY.majorUnit">5</option>
+        <option name="charting.axisTitleX.text">MOID (Minimum Orbit Intersection Distance)</option>
+        <option name="charting.axisTitleY.text">Absolute Magnitude</option>
+        <option name="charting.axisX.maximumNumber">0.2</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.maximumNumber">35</option>
+        <option name="charting.chart">scatter</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Average Magnitude by Orbit Uncertainty</title>
+        <search>
+          <query>index="nasa_neo" | chart avg(absolute_magnitude_h) as x by orbital_data.orbit_uncertainty | eval x = round(x, 2)</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.axisLabelsY.majorUnit">5</option>
+        <option name="charting.axisTitleX.text">Orbit Uncertainty</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.text">Average Magnitude</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisY.maximumNumber">30</option>
+        <option name="charting.axisY.minimumNumber">0</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">0</option>
+        <option name="trellis.size">large</option>
+        <option name="trellis.splitBy">_aggregation</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Average MOID by Orbit Uncertainty</title>
+        <search>
+          <query>index="nasa_neo" | chart avg(orbital_data.minimum_orbit_intersection) as x by orbital_data.orbit_uncertainty | eval x = round(x, 3)</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.axisLabelsY.majorUnit">0.02</option>
+        <option name="charting.axisTitleY.text">Average MOID</option>
+        <option name="charting.axisY.maximumNumber">0.12</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

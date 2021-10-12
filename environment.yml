@@ -1,0 +1,8 @@
+name: tesla-hw
+dependencies:
+  - python=3.8
+  - requests
+  - python-dotenv
+  - black
+  - flake8
+  - mypy
